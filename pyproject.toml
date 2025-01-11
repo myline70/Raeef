@@ -1,0 +1,12 @@
+[tool.briefcase]
+app_name = "assistant_app"  # اسم التطبيق الخاص بك بدون مسافات
+formal_name = "Assistant Application"  # الاسم الكامل للتطبيق
+bundle = "com.myline70.assistantapp"  # معرف حزمة التطبيق
+version = "1.0.0"  # إصدار التطبيق
+
+[tool.briefcase.app.assistant_app]
+sources = "src/assistant_app"
+requires = [
+    "briefcase",
+    "some-other-dependencies"  # أضف أي مكتبات أخرى تعتمد عليها
+]

@@ -22,20 +22,20 @@ jobs:
         with:
           python-version: 3.9
 
-      # Manually install pip if missing
+      # Ensure pip is installed
       - name: Ensure pip is installed
         run: |
           python -m ensurepip || echo "ensurepip not available"
           python -m pip install --upgrade pip || echo "pip install failed"
 
-      # Verify if pyproject.toml exists
+      # Verify pyproject.toml file
       - name: Verify pyproject.toml
-        shell: pwsh
+        shell: bash
         run: |
-          if (!(Test-Path "pyproject.toml")) {
-            Write-Error "pyproject.toml not found!";
+          if [ ! -f "pyproject.toml" ]; then
+            echo "pyproject.toml not found!";
             exit 1;
-          }
+          fi
 
       # Install dependencies
       - name: Install Dependencies

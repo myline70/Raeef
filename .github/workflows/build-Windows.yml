@@ -20,44 +20,25 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Upgrade pip
-        run: python -m ensurepip --upgrade
-
-      - name: Create pyproject.toml
+      - name: Verify Project Structure
         run: |
-          echo "[build-system]
-          requires = ['briefcase']
-          build-backend = 'briefcase.bootstrap'
-
-          [tool.briefcase]
-          project_name = 'myapp'
-          bundle = 'com.example'
-          version = '0.1.0'
-          url = 'https://example.com'
-          license = 'BSD'
-          author = 'Jane Developer'
-          author_email = 'jane@example.com'
-
-          [tool.briefcase.app.myapp]
-          formal_name = 'My App'
-          description = 'My first Briefcase app'
-          sources = ['src/myapp']
-          requires = []" > pyproject.toml
-
-      - name: Create Basic App Structure
-        run: |
-          mkdir -p src/myapp
-          echo "def main():
-              print('Hello, World!')
-          
-          if __name__ == '__main__':
-              main()" > src/myapp/__main__.py
-          echo "__version__ = '0.1.0'" > src/myapp/__init__.py
+          if (!(Test-Path pyproject.toml)) {
+            Write-Error "pyproject.toml not found!"
+            exit 1
+          }
+          if (!(Test-Path src/assistant_app)) {
+            Write-Error "Source directory not found!"
+            exit 1
+          }
 
       - name: Install Dependencies
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install briefcase
+          # تثبيت المتطلبات الإضافية إذا كانت موجودة في requirements.txt
+          if (Test-Path requirements.txt) {
+            pip install -r requirements.txt
+          }
 
       - name: Build Windows App
         run: |
@@ -68,5 +49,7 @@ jobs:
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-build
-          path: dist/
+          name: assistant-app-windows
+          path: |
+            windows/*/assistant_app*.msi
+            windows/*/assistant_app*.exe

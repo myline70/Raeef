@@ -34,19 +34,24 @@ jobs:
           description = "Assistant Application"
           author = "Author Name"
           author_email = "author@example.com"
+          license = "MIT"
+          url = "https://github.com/myline70/Raeef"
 
           [tool.briefcase.app.assistant_app]
           formal_name = "Assistant Application"
           description = "Assistant Application"
+          icon = "src/assistant_app/resources/assistant_app"
           sources = ["src/assistant_app"]
           requires = [
               "briefcase",
           ]
+          license = "MIT"
           '@ | Out-File -FilePath pyproject.toml -Encoding UTF8
 
       - name: Create Source Directory
         run: |
           mkdir -p src/assistant_app
+          mkdir -p src/assistant_app/resources
           @'
           def main():
               print("Hello, World!")

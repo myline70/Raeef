@@ -23,13 +23,12 @@ jobs:
       - name: Upgrade pip
         run: python -m ensurepip --upgrade
 
-      - name: Verify pyproject.toml
+                  - name: Verify pyproject.toml
         run: |
-          if (!(Test-Path "pyproject.toml")) {
-              Write-Error "pyproject.toml not found!"
+          if not exist pyproject.toml (
+              echo "pyproject.toml not found!"
               exit 1
-          }
-        shell: pwsh
+          )
 
       - name: Install Dependencies
         run: |
@@ -45,8 +44,8 @@ jobs:
           briefcase build windows
           briefcase package windows
 
-      - name: Upload Windows Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-build
-          path: dist/
+    - name: Upload Windows Artifact
+            uses: actions/upload-artifact@v4
+            with:
+            name: windows-build
+            path: dist/

@@ -20,28 +20,49 @@ jobs:
         with:
           python-version: 3.9
 
+      - name: Update pyproject.toml
+        run: |
+          @'
+          [build-system]
+          requires = ["briefcase"]
+          build-backend = "briefcase.bootstrap"
+
+          [tool.briefcase]
+          project_name = "assistant_app"
+          version = "1.0.0"
+          bundle = "com.myline70.assistantapp"
+          description = "Assistant Application"
+          author = "Author Name"
+          author_email = "author@example.com"
+
+          [tool.briefcase.app.assistant_app]
+          formal_name = "Assistant Application"
+          description = "Assistant Application"
+          sources = ["src/assistant_app"]
+          requires = [
+              "briefcase",
+          ]
+          '@ | Out-File -FilePath pyproject.toml -Encoding UTF8
+
       - name: Create Source Directory
         run: |
           mkdir -p src/assistant_app
-          if (!(Test-Path src/assistant_app/__main__.py)) {
-            echo "def main():
-                print('Hello, World!')
-            
-            if __name__ == '__main__':
-                main()" > src/assistant_app/__main__.py
-          }
-          if (!(Test-Path src/assistant_app/__init__.py)) {
-            echo "__version__ = '1.0.0'" > src/assistant_app/__init__.py
-          }
+          @'
+          def main():
+              print("Hello, World!")
+
+          if __name__ == '__main__':
+              main()
+          '@ | Out-File -FilePath src/assistant_app/__main__.py -Encoding UTF8
+          
+          @'
+          __version__ = "1.0.0"
+          '@ | Out-File -FilePath src/assistant_app/__init__.py -Encoding UTF8
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install briefcase
-          # تثبيت المتطلبات الإضافية إذا كانت موجودة في requirements.txt
-          if (Test-Path requirements.txt) {
-            pip install -r requirements.txt
-          }
 
       - name: Build Windows App
         run: |

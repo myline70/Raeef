@@ -75,14 +75,14 @@ jobs:
           briefcase build windows
           briefcase package windows
 
-      - name: List Build Directory
+      - name: List Build Artifacts
         run: |
-          Get-ChildItem -Path . -Recurse | Select-Object FullName
+          dir windows\dist
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
           name: assistant-app-windows
           path: |
-            .\assistant_app\windows\dist\**\*.msi
-            .\assistant_app\windows\dist\**\*.exe
+            windows\dist\*.msi
+            windows\dist\*.exe

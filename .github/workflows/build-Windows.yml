@@ -22,25 +22,62 @@ jobs:
         with:
           python-version: 3.9
 
-      # 3. Upgrade pip and install dependencies
+      # 3. Create or Update pyproject.toml
+      - name: Create or Update pyproject.toml
+        run: |
+          echo "[build-system]
+          requires = ['briefcase']
+          build-backend = 'briefcase.bootstrap'
+
+          [tool.briefcase]
+          project_name = 'assistant_app'
+          version = '1.0.0'
+          bundle = 'com.myline70.assistantapp'
+          description = 'Assistant Application'
+          author = 'Author Name'
+          author_email = 'author@example.com'
+          license = 'MIT'
+          url = 'https://github.com/myline70/Raeef'
+
+          [tool.briefcase.app.assistant_app]
+          formal_name = 'Assistant Application'
+          description = 'Assistant Application'
+          sources = ['src/assistant_app']
+          requires = [
+              'briefcase',
+          ]" > pyproject.toml
+
+      # 4. Verify pyproject.toml
+      - name: Verify pyproject.toml
+        run: |
+          if [ ! -f "pyproject.toml" ]; then
+            echo "pyproject.toml not found!";
+            exit 1;
+          fi
+          if ! grep -q "project_name = 'assistant_app'" pyproject.toml; then
+            echo "project_name is missing in pyproject.toml!";
+            exit 1;
+          fi
+
+      # 5. Install Dependencies
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install briefcase
 
-      # 4. Build the application
+      # 6. Build the application
       - name: Build Windows App
         run: |
           briefcase create windows
           briefcase build windows
           briefcase package windows
 
-      # 5. List Build Directory (Debugging)
+      # 7. List Build Directory (Debugging)
       - name: List Build Directory
         run: |
           dir dist
 
-      # 6. Upload Windows Artifact
+      # 8. Upload Windows Artifact
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:

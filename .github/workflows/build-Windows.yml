@@ -25,39 +25,41 @@ jobs:
       # 3. Create or Update pyproject.toml
       - name: Create or Update pyproject.toml
         run: |
-          echo "[build-system]
-          requires = ['briefcase']
-          build-backend = 'briefcase.bootstrap'
+          @"
+          [build-system]
+          requires = ["briefcase"]
+          build-backend = "briefcase.bootstrap"
 
           [tool.briefcase]
-          project_name = 'assistant_app'
-          version = '1.0.0'
-          bundle = 'com.myline70.assistantapp'
-          description = 'Assistant Application'
-          author = 'Author Name'
-          author_email = 'author@example.com'
-          license = 'MIT'
-          url = 'https://github.com/myline70/Raeef'
+          project_name = "assistant_app"
+          version = "1.0.0"
+          bundle = "com.myline70.assistantapp"
+          description = "Assistant Application"
+          author = "Author Name"
+          author_email = "author@example.com"
+          license = "MIT"
+          url = "https://github.com/myline70/Raeef"
 
           [tool.briefcase.app.assistant_app]
-          formal_name = 'Assistant Application'
-          description = 'Assistant Application'
-          sources = ['src/assistant_app']
+          formal_name = "Assistant Application"
+          description = "Assistant Application"
+          sources = ["src/assistant_app"]
           requires = [
-              'briefcase',
-          ]" > pyproject.toml
+              "briefcase",
+          ]
+          "@ | Out-File -FilePath pyproject.toml -Encoding UTF8
 
       # 4. Verify pyproject.toml
       - name: Verify pyproject.toml
         run: |
-          if [ ! -f "pyproject.toml" ]; then
-            echo "pyproject.toml not found!";
-            exit 1;
-          fi
-          if ! grep -q "project_name = 'assistant_app'" pyproject.toml; then
-            echo "project_name is missing in pyproject.toml!";
-            exit 1;
-          fi
+          if (-Not (Test-Path -Path "pyproject.toml")) {
+              Write-Host "pyproject.toml not found!";
+              exit 1;
+          }
+          if (-Not (Select-String -Path "pyproject.toml" -Pattern 'project_name = "assistant_app"')) {
+              Write-Host "project_name is missing in pyproject.toml!";
+              exit 1;
+          }
 
       # 5. Install Dependencies
       - name: Install Dependencies
@@ -75,7 +77,7 @@ jobs:
       # 7. List Build Directory (Debugging)
       - name: List Build Directory
         run: |
-          dir dist
+          Get-ChildItem -Path dist
 
       # 8. Upload Windows Artifact
       - name: Upload Windows Artifact

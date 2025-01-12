@@ -17,9 +17,9 @@ jobs:
         with:
           python-version: 3.10
 
-      - name: Ensure pip is installed
+      - name: Install pip
         run: |
-          python -m ensurepip --upgrade
+          python -m ensurepip
           python -m pip install --upgrade pip
 
       - name: Install Dependencies

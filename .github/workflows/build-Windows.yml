@@ -22,11 +22,11 @@ jobs:
         with:
           python-version: 3.9
 
-      # Ensure pip is installed and updated
+      # Manually install pip if missing
       - name: Ensure pip is installed
         run: |
-          python -m ensurepip
-          python -m pip install --upgrade pip
+          python -m ensurepip || echo "ensurepip not available"
+          python -m pip install --upgrade pip || echo "pip install failed"
 
       # Verify if pyproject.toml exists
       - name: Verify pyproject.toml

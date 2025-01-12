@@ -1,4 +1,4 @@
-name: Build Windows Application
+name: Build Windows App
 
 on:
   push:
@@ -12,49 +12,40 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-      # التحقق من إعدادات العمل
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ضبط إصدار Python الصحيح
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.9
 
-      # التحقق من وجود pip
-      - name: Verify pip installation
+      - name: Ensure pip is installed
         run: |
-          python -m ensurepip
+          python -m ensurepip --upgrade
           python -m pip install --upgrade pip
 
-      # التحقق من وجود pyproject.toml
       - name: Verify pyproject.toml
-        shell: pwsh
         run: |
-          if (!(Test-Path "pyproject.toml")) {
-            Write-Error "pyproject.toml not found!";
+          if [ ! -f "pyproject.toml" ]; then
+            echo "pyproject.toml not found!";
             exit 1;
-          }
+          fi
 
-      # تثبيت المتطلبات
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
 
-      # تثبيت Briefcase
       - name: Install Briefcase
         run: |
           pip install briefcase
 
-      # بناء التطبيق لنظام Windows
       - name: Build Windows App
         run: |
           briefcase create windows
           briefcase build windows
           briefcase package windows
 
-      # رفع النتائج (اختياري)
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:

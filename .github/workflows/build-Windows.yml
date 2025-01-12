@@ -42,9 +42,7 @@ jobs:
           description = "Assistant Application"
           icon = "src/assistant_app/resources/assistant_app"
           sources = ["src/assistant_app"]
-          requires = [
-              "briefcase",
-          ]
+          requires = ["briefcase"]
           license = "MIT"
           '@ | Out-File -FilePath pyproject.toml -Encoding UTF8
 
@@ -59,7 +57,7 @@ jobs:
           if __name__ == '__main__':
               main()
           '@ | Out-File -FilePath src/assistant_app/__main__.py -Encoding UTF8
-          
+
           @'
           __version__ = "1.0.0"
           '@ | Out-File -FilePath src/assistant_app/__init__.py -Encoding UTF8
@@ -74,10 +72,7 @@ jobs:
           briefcase create windows
           briefcase build windows
           briefcase package windows
-
-      - name: List All Files
-        run: |
-          dir -Recurse
+          dir windows\dist
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4

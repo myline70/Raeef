@@ -16,26 +16,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Setup Python version 3.9
+      # Setup Python 3.9
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.9
 
-      # Ensure pip is installed
-      - name: Ensure pip is installed
+      # Upgrade pip
+      - name: Upgrade pip
         run: |
-          python -m ensurepip || echo "ensurepip not available"
-          python -m pip install --upgrade pip || echo "pip install failed"
+          python -m pip install --upgrade pip
 
-      # Verify pyproject.toml file
+      # Verify pyproject.toml
       - name: Verify pyproject.toml
-        shell: bash
         run: |
-          if [ ! -f "pyproject.toml" ]; then
-            echo "pyproject.toml not found!";
-            exit 1;
-          fi
+          if not exist pyproject.toml (
+            echo "pyproject.toml not found!" && exit 1
+          )
 
       # Install dependencies
       - name: Install Dependencies
@@ -54,7 +51,7 @@ jobs:
           briefcase build windows
           briefcase package windows
 
-      # Upload the build artifact
+      # Upload Windows Artifact
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:

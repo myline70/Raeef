@@ -18,17 +18,17 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.9  # الإصدار الذي نجح سابقًا
+          python-version: 3.9
 
       - name: Upgrade pip
         run: python -m ensurepip --upgrade
 
       - name: Verify pyproject.toml
         run: |
-          if not exist pyproject.toml (
-              echo "pyproject.toml not found!"
-              exit 1
-          )
+          if (!(Test-Path pyproject.toml)) {
+            Write-Error "pyproject.toml not found!"
+            exit 1
+          }
 
       - name: Install Dependencies
         run: |

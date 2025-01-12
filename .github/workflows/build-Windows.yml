@@ -69,15 +69,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install briefcase
 
-      - name: Build Windows App
+      - name: Debug Build Logs
         run: |
-          briefcase create windows
-          briefcase build windows
-          briefcase package windows
+          briefcase create windows --verbose
+          briefcase build windows --verbose
+          briefcase package windows --verbose
 
-      - name: List Build Artifacts
+      - name: List All Files
         run: |
-          dir windows\dist
+          dir -Recurse
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4

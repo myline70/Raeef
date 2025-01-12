@@ -71,9 +71,9 @@ jobs:
 
       - name: Debug Build Logs
         run: |
-          briefcase create windows --verbose
-          briefcase build windows --verbose
-          briefcase package windows --verbose
+          briefcase create windows
+          briefcase build windows
+          briefcase package windows
 
       - name: List All Files
         run: |

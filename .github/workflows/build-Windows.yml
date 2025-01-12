@@ -18,27 +18,25 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.9  # الإصدار الذي نجح سابقًا
 
-      - name: Ensure pip is installed
-        run: |
-          python -m ensurepip --upgrade || true
-          python -m pip install --upgrade pip || true
+      - name: Upgrade pip
+        run: python -m ensurepip --upgrade
 
       - name: Verify pyproject.toml
         run: |
-          if (-Not (Test-Path "pyproject.toml")) {
-            Write-Host "pyproject.toml not found!"
-            exit 1
-          }
+          if not exist pyproject.toml (
+              echo "pyproject.toml not found!"
+              exit 1
+          )
 
       - name: Install Dependencies
         run: |
+          pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Install Briefcase
-        run: |
-          pip install briefcase
+        run: pip install briefcase
 
       - name: Build Windows App
         run: |

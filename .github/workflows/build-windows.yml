@@ -1,4 +1,4 @@
-name: Build Windows EXE
+name: Build Windows EXE (Debug Console)
 
 on:
   workflow_dispatch:
@@ -22,9 +22,9 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Build EXE with PyInstaller (folder mode)
+      - name: Build EXE with Console enabled
         run: |
-          pyinstaller --noconfirm --windowed --name raeef_assistant main.py
+          pyinstaller --noconfirm --console --name raeef_assistant main.py
 
       - name: Copy database to dist folder
         run: |
@@ -33,5 +33,5 @@ jobs:
       - name: Upload app folder as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: raeef-assistant-folder
+          name: raeef-assistant-debug
           path: dist/raeef_assistant

@@ -22,12 +22,16 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Build EXE with PyInstaller
+      - name: Build EXE with PyInstaller (folder mode)
         run: |
-          pyinstaller --noconfirm --onefile --windowed main.py
+          pyinstaller --noconfirm --windowed --name raeef_assistant main.py
 
-      - name: Upload executable
+      - name: Copy database to dist folder
+        run: |
+          copy questions.db dist\raeef_assistant\
+
+      - name: Upload app folder as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: personal-assistant-exe
-          path: dist/main.exe
+          name: raeef-assistant-folder
+          path: dist/raeef_assistant

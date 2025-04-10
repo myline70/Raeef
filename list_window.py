@@ -1,4 +1,5 @@
 import sqlite3
+import pyttsx3
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout,
     QMessageBox, QLineEdit, QTextEdit, QDialog, QLabel
@@ -21,6 +22,14 @@ class ListWindow(QWidget):
         close_btn.clicked.connect(self.close)
         layout.addWidget(close_btn)
 
+    def speak(self, text):
+        try:
+            engine = pyttsx3.init()
+            engine.say(text)
+            engine.runAndWait()
+        except Exception as e:
+            print(f"Error in speaking: {e}")
+
     def load_data(self):
         conn = sqlite3.connect('questions.db')
         c = conn.cursor()
@@ -34,8 +43,13 @@ class ListWindow(QWidget):
             self.table.setItem(i, 1, QTableWidgetItem(row[1]))
             self.table.setItem(i, 2, QTableWidgetItem(row[2]))
 
-            # Add edit and delete buttons
             button_layout = QHBoxLayout()
+
+            speak_btn = QPushButton("🔊")
+            speak_btn.setStyleSheet("color: black; background-color: #CCFFCC;")
+            speak_btn.clicked.connect(lambda checked, text=row[2]: self.speak(text))
+            button_layout.addWidget(speak_btn)
+
             delete_btn = QPushButton("حذف")
             delete_btn.setStyleSheet("color: black; background-color: #FFCCCC;")
             delete_btn.clicked.connect(lambda checked, row_id=row[0]: self.delete_row(row_id))
@@ -60,6 +74,7 @@ class ListWindow(QWidget):
             conn.commit()
             conn.close()
             self.load_data()
+            self.speak("تم حذف السؤال.")
 
     def edit_row(self, row_data):
         dialog = QDialog(self)
@@ -97,5 +112,7 @@ class ListWindow(QWidget):
             self.load_data()
             dialog.close()
             QMessageBox.information(self, "نجاح", "تم تعديل السؤال.")
+            self.speak("تم تعديل السؤال بنجاح.")
         else:
             QMessageBox.warning(self, "خطأ", "يرجى إدخال السؤال والإجابة.")
+            self.speak("يرجى إدخال السؤال والإجابة.")

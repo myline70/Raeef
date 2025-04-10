@@ -105,7 +105,6 @@ class MainWindow(QMainWindow):
         finally:
             self.avatar.stop_animation()  # إيقاف حركة الفم دائمًا
             QTimer.singleShot(1000, lambda: self.text_display.setText(""))
-            threading.Thread(target=speak, daemon=True).start()
 
     def show_add_question(self):
         self.add_question_window = AddQuestionWindow(self)

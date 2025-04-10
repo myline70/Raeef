@@ -34,7 +34,7 @@ jobs:
             main.py
 
       - name: Upload .app build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: RaeefAssistant-macOS
           path: dist/RaeefAssistant.app

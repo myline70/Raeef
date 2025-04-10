@@ -1,7 +1,16 @@
 import sqlite3
+import pyttsx3
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QLineEdit, QTextEdit, QPushButton, QMessageBox
 )
+
+def speak(text):
+    try:
+        engine = pyttsx3.init()
+        engine.say(text)
+        engine.runAndWait()
+    except:
+        pass
 
 class AddQuestionWindow(QDialog):
     def __init__(self, parent=None):
@@ -31,7 +40,6 @@ class AddQuestionWindow(QDialog):
         close_btn.setStyleSheet("background-color: #FF6B6B; color: black;")
         close_btn.clicked.connect(self.close)
 
-        # ترتيب العناصر
         layout.addWidget(question_label)
         layout.addWidget(self.question_input)
         layout.addWidget(answer_label)
@@ -49,11 +57,21 @@ class AddQuestionWindow(QDialog):
         if question and answer:
             conn = sqlite3.connect('questions.db')
             c = conn.cursor()
+
+            c.execute("SELECT * FROM qa WHERE question = ?", (question,))
+            if c.fetchone():
+                QMessageBox.warning(self, "موجود مسبقًا", "هذا السؤال موجود بالفعل.")
+                speak("هذا السؤال مضاف من قبل")
+                conn.close()
+                return
+
             c.execute("INSERT INTO qa (question, answer) VALUES (?, ?)", (question, answer))
             conn.commit()
             conn.close()
             QMessageBox.information(self, "نجاح", "تم حفظ السؤال.")
+            speak("تم حفظ السؤال بنجاح")
             self.question_input.clear()
             self.answer_input.clear()
         else:
             QMessageBox.warning(self, "خطأ", "يرجى إدخال السؤال والإجابة.")
+            speak("يرجى إدخال السؤال والإجابة.")

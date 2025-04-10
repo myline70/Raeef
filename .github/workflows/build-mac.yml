@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
-  build-macos:
+  build:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -22,19 +23,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pyinstaller pillow
+          pip install pyinstaller pyqt6 pyttsx3 SpeechRecognition
 
-      - name: Build app with pyinstaller
+      - name: Build app with PyInstaller
         run: |
-          pyinstaller \
+          pyinstaller --noconfirm --windowed \
             --name RaeefAssistant \
-            --windowed \
-            --icon=icon.icns \
-            --add-data "qt.conf:." \
+            --icon icon.icns \
             main.py
 
-      - name: Upload .app build
-        uses: actions/upload-artifact@v2
+      - name: Upload built app
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: RaeefAssistant-macOS
-          path: dist/RaeefAssistant.app
+          path: dist/RaeefAssistant/RaeefAssistant.app

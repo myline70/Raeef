@@ -1,0 +1,42 @@
+name: Build macOS App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+          pip install Pillow
+
+      - name: Build app using PyInstaller (macOS)
+        run: |
+          pyinstaller --noconfirm --windowed --name raeef_assistant --icon=icon.ico main.py
+
+      - name: Copy required files
+        run: |
+          cp questions.db dist/raeef_assistant/
+
+      - name: Compress app for download
+        run: |
+          cd dist && zip -r raeef_assistant-mac.zip raeef_assistant.app
+
+      - name: Upload app zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: raeef-assistant-mac
+          path: dist/raeef_assistant-mac.zip

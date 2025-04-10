@@ -3,12 +3,11 @@ import pyttsx3
 from PyQt6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QLabel
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from avatar import AnimatedSvgWidget
 from list_window import ListWindow
 from add_question_window import AddQuestionWindow
-from record_question import RecordQuestion  # استيراد الوظيفة من ملف التسجيل الصوتي
-from PyQt6.QtCore import QTimer
+from record_question import RecordQuestion
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -39,7 +38,7 @@ class MainWindow(QMainWindow):
         button_layout = QHBoxLayout()
         self.record_btn = QPushButton("تسجيل سؤال")
         self.record_btn.setStyleSheet("background-color: #3AAFA9; color: black;")
-        self.record_btn.clicked.connect(self.record_question)  # ربط الزر بالدالة الجديدة
+        self.record_btn.clicked.connect(self.record_question)
         button_layout.addWidget(self.record_btn)
 
         add_question_btn = QPushButton("إضافة سؤال")
@@ -58,27 +57,30 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(close_btn)
 
         layout.addLayout(button_layout)
-   
+
+        # عرض الترحيب الصوتي بعد ثانية واحدة من التشغيل
+        QTimer.singleShot(1000, self.play_intro)
+
+    def play_intro(self):
+        self.text_display.setText("مرحبًا! أنا رائف، مساعدك الشخصي.")
+        self.engine.say("مرحبًا! أنا رائف، مساعدك الشخصي.")
+        self.engine.runAndWait()
 
     def record_question(self):
         try:
             self.text_display.setText("جاري التسجيل...")
-            recorder = RecordQuestion()  # إنشاء كائن من وظيفة التسجيل
-            question = recorder.record()  # تسجيل السؤال
+            recorder = RecordQuestion()
+            question = recorder.record()
             self.text_display.setText(f"السؤال: {question}")
-
-        # معالجة السؤال بعد تسجيله
-            self.process_question(question)  # استدعاء دالة معالجة السؤال
+            self.process_question(question)
         except Exception as e:
             print(f"Error during recording: {e}")
             self.text_display.setText(".")
-    
+
     def process_question(self, question):
         try:
             conn = sqlite3.connect('questions.db')
             cursor = conn.cursor()
-
-            # البحث عن الإجابة في قاعدة البيانات
             cursor.execute("SELECT answer FROM qa WHERE question = ?", (question,))
             result = cursor.fetchone()
             conn.close()
@@ -86,7 +88,7 @@ class MainWindow(QMainWindow):
             if result:
                 answer = result[0]
                 self.text_display.setText(f"السؤال: {question}\nالإجابة: {answer}")
-                self.speak_answer(answer)  # استدعاء الدالة هنا
+                self.speak_answer(answer)
             else:
                 self.text_display.setText(f"السؤال: {question}\nعذرًا، لا أملك إجابة لهذا السؤال.")
                 self.speak_answer("عذرًا، لا أملك إجابة لهذا السؤال.")
@@ -97,13 +99,13 @@ class MainWindow(QMainWindow):
 
     def speak_answer(self, text):
         try:
-            self.avatar.start_animation()  # بدء حركة الفم
-            self.engine.say(text)  # قراءة النص باستخدام محرك TTS
-            self.engine.runAndWait()  # الانتظار حتى انتهاء القراءة
+            self.avatar.start_animation()
+            self.engine.say(text)
+            self.engine.runAndWait()
         except Exception as e:
             print(f"Error during speech: {e}")
         finally:
-            self.avatar.stop_animation()  # إيقاف حركة الفم دائمًا
+            self.avatar.stop_animation()
             QTimer.singleShot(1000, lambda: self.text_display.setText(""))
 
     def show_add_question(self):

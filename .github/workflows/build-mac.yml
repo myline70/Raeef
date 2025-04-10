@@ -2,38 +2,43 @@ name: Build macOS App
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main  # أو غيّرها للفرع اللي تشتغل عليه
 
 jobs:
-  build:
+  build-macos:
     runs-on: macos-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pyinstaller Pillow
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pyttsx3 PyQt6 SpeechRecognition
 
-    - name: Build macOS App
-      run: |
-        pyinstaller --noconfirm \
-          --windowed \
-          --icon=icon.icns \
-          --name=RaeefAssistant \
-          main.py
+      - name: Install Pillow for icon conversion
+        run: pip install Pillow
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: RaeefAssistant-macOS
-        path: dist/RaeefAssistant/RaeefAssistant.app
+      - name: Build macOS App
+        run: |
+          pyinstaller main.py \
+            --name RaeefAssistant \
+            --windowed \
+            --icon=icon.icns \
+            --noconfirm
+
+      - name: Debug folder contents
+        run: ls -R dist
+
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: RaeefAssistant-macOS
+          path: dist/**/*.app

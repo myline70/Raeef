@@ -21,6 +21,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
+          pip install Pillow   # ✅ هذا هو السطر المطلوب لتفادي خطأ الأيقونة
 
       - name: Build EXE with PyInstaller (with icon)
         run: |
@@ -29,7 +30,6 @@ jobs:
       - name: Copy required files to output folder
         run: |
           copy questions.db dist\raeef_assistant\
-          REM انسخ أي ملفات إضافية أخرى تحتاجها هنا (صور، صوت، إلخ)
 
       - name: Upload final app folder
         uses: actions/upload-artifact@v4

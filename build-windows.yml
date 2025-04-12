@@ -1,4 +1,4 @@
-name: Build Windows App (Folder Version)
+name: Build Windows EXE
 
 on:
   push:
@@ -21,19 +21,15 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements-win.txt
           pip install pyinstaller
 
-      - name: Build (non-onefile) EXE with PyInstaller
+      - name: Build EXE with PyInstaller
         run: |
-          pyinstaller --noconfirm --windowed ^
-            --add-data "questions.db;." ^
-            --add-data "qt.conf;." ^
-            --add-data "icon.ico;." ^
-            main.py
+          pyinstaller --noconfirm --windowed main.py
 
-      - name: Upload folder as zip
+      - name: Upload executable
         uses: actions/upload-artifact@v4
         with:
-          name: personal-assistant-folder
-          path: dist/main
+          name: personal-assistant-exe
+          path: dist/main.exe

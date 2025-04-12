@@ -26,10 +26,10 @@ jobs:
 
       - name: Build EXE with PyInstaller
         run: |
-          pyinstaller --noconfirm --windowed main.py
+          pyinstaller --noconfirm --windowed src/main.py --name RaeefAssistant
 
       - name: Upload executable
         uses: actions/upload-artifact@v4
         with:
           name: personal-assistant-exe
-          path: dist/main.exe
+          path: dist/RaeefAssistant.exe

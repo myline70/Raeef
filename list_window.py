@@ -11,6 +11,11 @@ class ListWindow(QWidget):
         self.setWindowTitle("قائمة الأسئلة والإجابات")
         self.setFixedSize(800, 500)
 
+        # تهيئة محرك الصوت مرة واحدة
+        self.engine = pyttsx3.init()
+        self.engine.setProperty('rate', 150)
+        self.engine.setProperty('volume', 1.0)
+
         layout = QVBoxLayout(self)
         self.table = QTableWidget()
         self.table.setColumnCount(4)
@@ -24,9 +29,9 @@ class ListWindow(QWidget):
 
     def speak(self, text):
         try:
-            engine = pyttsx3.init()
-            engine.say(text)
-            engine.runAndWait()
+            self.engine.stop()
+            self.engine.say(text)
+            self.engine.runAndWait()
         except Exception as e:
             print(f"Error in speaking: {e}")
 

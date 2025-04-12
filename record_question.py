@@ -1,10 +1,8 @@
 import speech_recognition as sr
+import pyaudio  # مهم جدًا لضمان عمل المايك على ويندوز
 
 class RecordQuestion:
     def __init__(self, process_question_callback=None):
-        """
-        process_question_callback: دالة لمعالجة السؤال المسجل.
-        """
         self.recognizer = sr.Recognizer()
         self.process_question_callback = process_question_callback
 
@@ -19,39 +17,36 @@ class RecordQuestion:
             for i, name in enumerate(mic_names):
                 print(f"[{i}] {name}")
 
-            # نختار أول مايكروفون متاح
-            return 0
+            return 0  # اختر أول مايكروفون تلقائيًا
         except Exception as e:
             print(f"⚠️ خطأ أثناء فحص المايكروفونات: {e}")
             return None
 
     def record(self):
         try:
-            print("🎤 بدء تشغيل المايكروفون...")
+            print("🟡 تهيئة المايكروفون...")
             mic_index = self.get_microphone_index()
             if mic_index is None:
                 return "❌ لم يتم العثور على مايكروفون."
 
             with sr.Microphone(device_index=mic_index) as source:
-                print("🎧 جاري الاستماع...")
-                self.recognizer.adjust_for_ambient_noise(source, duration=1)
+                self.recognizer.adjust_for_ambient_noise(source)
+                print("🎤 استمع الآن...")
                 audio = self.recognizer.listen(source, timeout=10, phrase_time_limit=10)
 
-            print("🔍 جاري التعرف على الكلام...")
+            print("✅ تم التسجيل، جارٍ التحويل لنص...")
             question = self.recognizer.recognize_google(audio, language='ar-AR')
-            print(f"✅ تم التعرف على السؤال: {question}")
+            print(f"📥 السؤال: {question}")
 
             if self.process_question_callback:
                 self.process_question_callback(question)
 
-            return question.strip()
+            return question
 
         except sr.UnknownValueError:
-            print("❗ لم يتم فهم السؤال.")
-            return ""
+            return "لم أتمكن من فهم السؤال."
         except sr.RequestError as e:
-            print(f"🌐 مشكلة في الاتصال بالخدمة: {e}")
-            return "خطأ في الاتصال بالخدمة."
+            return f"خطأ في الاتصال بالخدمة: {e}"
         except Exception as e:
-            print(f"❗ خطأ غير متوقع: {e}")
-            return "حدث خطأ غير متوقع."
+            print(f"❌ خطأ غير متوقع: {e}")
+            return f"حدث خطأ غير متوقع: {e}"

@@ -3,7 +3,7 @@ import speech_recognition as sr
 class RecordQuestion:
     def __init__(self, process_question_callback=None):
         """
-        process_question_callback: دالة لمعالجة السؤال المسجل.
+        process_question_callback: دالة تُستدعى بعد التعرف على السؤال.
         """
         self.recognizer = sr.Recognizer()
         self.process_question_callback = process_question_callback
@@ -15,44 +15,42 @@ class RecordQuestion:
                 print("❌ لا توجد أجهزة مايكروفون متاحة.")
                 return None
 
-            print("🎙️ المايكروفونات المتاحة:")
+            print("🎙️ الأجهزة المتاحة:")
             for i, name in enumerate(mic_names):
                 print(f"[{i}] {name}")
 
-            # نختار أول مايكروفون متاح
-            return 0
+            return 0  # نختار أول جهاز تلقائياً
         except Exception as e:
             print(f"⚠️ خطأ أثناء فحص المايكروفونات: {e}")
             return None
 
     def record(self):
         try:
-            print("Initializing microphone...")
+            print("🔄 جاري تهيئة المايكروفون...")
             mic_index = self.get_microphone_index()
             if mic_index is None:
                 return "لم يتم العثور على مايكروفون."
 
             with sr.Microphone(device_index=mic_index) as source:
-                print("Microphone initialized successfully.")
-                print("Listening for the question...")
+                print("🎤 جاهز للاستماع...")
+                self.recognizer.adjust_for_ambient_noise(source, duration=1)
                 audio = self.recognizer.listen(source, timeout=10, phrase_time_limit=10)
-                print("Processing the audio...")
-                # استخدام واجهة Google للتعرف على النص
-                question = self.recognizer.recognize_google(audio, language='ar-AR')
-                print(f"Recognized Question: {question}")
 
-                # إذا كان هناك دالة لمعالجة السؤال، يتم استدعاؤها
-                if self.process_question_callback:
-                    self.process_question_callback(question)
+            print("⏳ جاري تحويل الصوت إلى نص...")
+            question = self.recognizer.recognize_google(audio, language='ar-AR')
+            print(f"✅ النص المُتعرّف عليه: {question}")
 
-                return question
+            if self.process_question_callback:
+                self.process_question_callback(question)
+
+            return question
 
         except sr.UnknownValueError:
-            print("Could not understand the question.")
+            print("❗ لم يتم فهم السؤال.")
             return "لم أتمكن من فهم السؤال."
         except sr.RequestError as e:
-            print(f"API request error: {e}")
+            print(f"❗ مشكلة في الاتصال: {e}")
             return f"حدث خطأ أثناء الاتصال بالخدمة: {e}"
         except Exception as e:
-            print(f"Unexpected error: {e}")
+            print(f"❗ خطأ غير متوقع: {e}")
             return f"خطأ غير متوقع: {e}"
